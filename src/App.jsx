@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import Coin from "./components/coin";
-const API_URL = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false'
+import LimitSelector from "./components/LimitSelector";
+const API_URL = import.meta.env.VITE_API_URL
 const App = () => {
   const [coins, setCoins] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [limit, setLimit] = useState(10)
 
   useEffect(() => {
     const fetchCoins = async () => {
       try {
-        const res = await fetch(API_URL)
+        let url = `${API_URL}&order=market_cap_desc&per_page=${limit}&page=1&sparkline=false`
+        const res = await fetch(url)
         if (!res.ok)
           throw new Error('fetch coins failed')
         const data = await res.json()
@@ -22,7 +25,7 @@ const App = () => {
       }
     }
     fetchCoins()
-  }, [])
+  }, [limit])
 
   return (
     <div>
@@ -30,11 +33,14 @@ const App = () => {
       {loading && <p>Loading...</p>}
       {error && <div className="error">{error}</div>}
       {!loading && !error &&
-        <main className="grid">
-          {coins.map(coin => (
-            <Coin coin={coin} key={coin.id} />
-          ))}
-        </main>
+        <>
+          <LimitSelector limit={limit} changeLimit={setLimit} />
+          <main className="grid">
+            {coins.map(coin => (
+              <Coin coin={coin} key={coin.id} />
+            ))}
+          </main>
+        </>
       }
     </div>
   );
