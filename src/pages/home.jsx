@@ -2,6 +2,8 @@ import Coin from "../components/coin";
 import LimitSelector from "../components/LimitSelector";
 import FilterInput from "../components/FilterInput";
 import SortSelector from "../components/SortSelector";
+import { Link } from "react-router";
+import Spinner from "../components/Spinner";
 const HomePage = ({ coins, filter, setFilter, limit, setLimit, sortBy, setSortBy, loading, error }) => {
   const filteredCoins = coins
     .filter(coin => coin.name.toLowerCase().includes(filter) || coin.symbol.toLowerCase().includes(filter))
@@ -25,7 +27,7 @@ const HomePage = ({ coins, filter, setFilter, limit, setLimit, sortBy, setSortBy
   return (
     <div>
       <h1>Crypto Dash</h1>
-      {loading && <p>Loading...</p>}
+      {loading && <Spinner color="#fff" />}
       {error && <div className="error">{error}</div>}
       {!loading && !error &&
         <>
@@ -38,7 +40,9 @@ const HomePage = ({ coins, filter, setFilter, limit, setLimit, sortBy, setSortBy
             {
               filteredCoins.length > 0 ?
                 filteredCoins.map(coin => (
-                  <Coin coin={coin} key={coin.id} />
+                  <Link to={`/coin/${coin.id}`} key={coin.id}>
+                    <Coin coin={coin} />
+                  </Link>
                 )) :
                 <p>No Matching Coins Found</p>
             }
